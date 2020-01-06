@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'package:practice_clone1/data/join_or_login.dart';
+import 'package:practice_clone1/helper/login_background.dart';
+import 'package:provider/provider.dart';
 class AuthPage extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
@@ -13,29 +15,52 @@ class AuthPage extends StatelessWidget {
         body: Stack(
         alignment: Alignment.center,
         children: <Widget>[
-          Container(color: Colors.white,),
+          CustomPaint(
+            size: size,
+            painter: LoginBackground(isJoin: Provider.of<JoinOrLogin>(context).isJoin),
+          ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              CircleAvatar(
-                backgroundImage: NetworkImage('https://picsum.photos/200'),
-              ),
+              _logoImage,
               Stack(
                 children: <Widget>[
                   _inputForm(size),
                   _authButton(size),
-                // Container(width: 100, height: 50, color:Colors.black,),
-              ],),
-              Container(height: size.height*0.1,),
-                Text("Don't Have an Account? Create One"),
-                Container(height: size.height*0.05,)
+                ],
+              ),
+              Container(
+                height: size.height*0.1,
+              ),
+                GestureDetector(
+                    onTap: (){
+                      JoinOrLogin joinOrLogin = Provider.of<JoinOrLogin>(context);
+                      joinOrLogin.toggle();
+                    },
+                    child: Text("Don't Have an Account? Create One")),
+                Container(
+                  height: size.height*0.05,
+                )
             ],
           ),
         ],
       ),
     );
   }
+
+  Widget get _logoImage => Expanded(
+    child: Padding(
+      padding: const EdgeInsets.only(top: 40, left: 24, right: 24),
+      child: FittedBox(
+        fit: BoxFit.contain,
+        child: CircleAvatar(
+          backgroundImage: NetworkImage('https://picsum.photos/200'),
+        ),
+      ),
+    ),
+  );
+
   Widget _inputForm(Size size) => Padding(
       padding: EdgeInsets.all(size.width*0.05),
       child: Card(
@@ -88,14 +113,20 @@ class AuthPage extends StatelessWidget {
       left: size.width*0.15,
       right: size.width*0.15,
       bottom: 0,
-      child: RaisedButton(
-          child: Text('Login'),
+      child: SizedBox(
+          height: 50,
+          child: RaisedButton(
+          child: Text('Login', style: TextStyle(fontSize: 20, color: Colors.white),),
           color: Colors.blue,
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15)),
+              borderRadius: BorderRadius.circular(25)),
           onPressed: (){
-
-          }),
+            if(_formKey.currentState.validate()){
+              print(_emailController.text.toString());
+              print(_passwordController.text.toString());
+            }
+          })
+        ,),
     );
 
 }
